@@ -1,0 +1,38 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Subject from './Subject';
+
+const subjects = [
+  { id: 'elektrotechnika', title: 'Podstawy Elektrotechniki', description: 'Pole elektrostatyczne, prąd stały, prąd przemienny i prawa Kirchhoffa.' },
+];
+
+function Home() {
+  return (
+    <div className="container">
+      <header className="page-header">
+        <h1>Curriculum</h1>
+        <div className="divider"></div>
+      </header>
+
+      <main className="subject-grid">
+        {subjects.map((subject) => (
+          <Link to={`/subject/${subject.id}`} key={subject.id} className="subject-card">
+            <h2>{subject.title}</h2>
+            <p>{subject.description}</p>
+          </Link>
+        ))}
+      </main>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/subject/:id" element={<Subject />} />
+      </Routes>
+    </Router>
+  );
+}

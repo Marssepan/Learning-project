@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+:root {
+  --bg-main: #fafafa;
+  --surface: #ffffff;
+  --text-main: #171717;
+  --text-muted: #737373;
+  --border-light: #e5e5e5;
+  --border-dark: #171717;
+  --transition: all 0.3s ease;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .serif-text {
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  margin: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+/* Header Styles */
+.page-header {
+  margin-bottom: 4rem;
+}
+
+.page-header h1 {
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--border-light);
+}
+
+/* Grid & Cards */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.subject-card {
+  display: block;
+  background: var(--surface);
+  padding: 2rem;
+  border: 1px solid var(--border-light);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.subject-card:hover {
+  border-color: var(--border-dark);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.subject-card h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.subject-card p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+/* Subject View Specifics */
+.back-link {
+  display: inline-block;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 2rem;
+  transition: var(--transition);
+}
+
+.back-link:hover {
+  color: var(--text-main);
+}
+
+.tabs {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0 0 1rem 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+  color: var(--text-main);
+  border-bottom-color: var(--border-dark);
+  font-weight: 500;
+}
+
+.content-panel {
+  background: var(--surface);
+  padding: 3rem;
+  border: 1px solid var(--border-light);
+}
