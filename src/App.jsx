@@ -28,7 +28,8 @@ function Home() {
 
 export default function App() {
   return (
-    <Router>
+    // Add the basename property right here:
+    <Router basename="/Learning-project">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/subject/:id" element={<Subject />} />
