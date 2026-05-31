@@ -40,7 +40,6 @@ export default function Subject() {
 
   // --- START QUIZ ---
   const startQuiz = () => {
-    // Ensure we have a valid number, clamped to the available questions
     const requestedCount = settings.questionCount === '' ? 1 : Number(settings.questionCount);
     const finalCount = Math.min(Math.max(1, requestedCount), subject.quiz.length);
 
@@ -138,7 +137,6 @@ export default function Subject() {
                     value={settings.questionCount}
                     onChange={(e) => {
                       const val = e.target.value;
-                      // Prevent leading zeros by parsing to int, allow empty string for backspacing
                       setSettings({...settings, questionCount: val === '' ? '' : parseInt(val, 10)});
                     }}
                     style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-light)' }}
@@ -188,13 +186,13 @@ export default function Subject() {
                       <label 
                         key={i} 
                         style={{ 
-                          padding: '1rem', 
+                          padding: '0.75rem 1rem', // FIX: Reduced padding for more horizontal space
                           border: `1px solid ${isSelected ? 'var(--border-dark)' : 'var(--border-light)'}`, 
                           backgroundColor: isSelected ? '#f3f4f6' : 'transparent', 
                           cursor: 'pointer', 
                           transition: 'var(--transition)', 
                           display: 'flex', 
-                          alignItems: 'flex-start' // FIX: Align to top of text
+                          alignItems: 'flex-start'
                         }}
                       >
                         <input 
@@ -203,13 +201,13 @@ export default function Subject() {
                             marginRight: '1rem', 
                             width: '1.2rem', 
                             height: '1.2rem', 
-                            flexShrink: 0, // FIX: Prevent shrinking on mobile
-                            marginTop: '0.1rem' // FIX: Minor optical alignment
+                            flexShrink: 0, 
+                            marginTop: '0.1rem' 
                           }}
                           checked={isSelected}
                           onChange={() => toggleOption(i)}
                         />
-                        <span style={{ lineHeight: '1.4', wordBreak: 'break-word' }}>{opt.text}</span>
+                        <span style={{ lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'normal' }}>{opt.text}</span>
                       </label>
                     );
                   })}
@@ -244,13 +242,13 @@ export default function Subject() {
 
                 <div>
                   <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>Performance Review</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     
                     {activeQuestions.map((q, qIndex) => {
                       const userSelectedIndices = userAnswers[qIndex] || [];
                       
                       return (
-                        <div key={qIndex} style={{ padding: '2rem', backgroundColor: '#fff', border: '1px solid var(--border-light)' }}>
+                        <div key={qIndex} style={{ padding: '1rem', backgroundColor: '#fff', border: '1px solid var(--border-light)' }}> {/* FIX: Reduced parent container padding */}
                           <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             Question {qIndex + 1}
                           </p>
@@ -282,12 +280,12 @@ export default function Subject() {
                                 <div 
                                   key={optIndex} 
                                   style={{ 
-                                    padding: '1rem', 
+                                    padding: '0.75rem 1rem', // FIX: Reduced padding inside the options
                                     border: `1px solid ${borderColor}`, 
                                     backgroundColor: bgColor,
                                     color: textColor,
                                     display: 'flex',
-                                    alignItems: 'flex-start' // FIX: Align to top of text
+                                    alignItems: 'flex-start'
                                   }}
                                 >
                                   <input 
@@ -298,11 +296,11 @@ export default function Subject() {
                                       marginRight: '1rem', 
                                       width: '1.2rem', 
                                       height: '1.2rem',
-                                      flexShrink: 0, // FIX: Prevent shrinking on mobile
-                                      marginTop: '0.1rem' // FIX: Minor optical alignment
+                                      flexShrink: 0, 
+                                      marginTop: '0.1rem' 
                                     }}
                                   />
-                                  <span style={{ lineHeight: '1.4', wordBreak: 'break-word' }}>{opt.text}</span>
+                                  <span style={{ lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'normal' }}>{opt.text}</span>
                                 </div>
                               );
                             })}
