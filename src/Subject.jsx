@@ -8,7 +8,7 @@ export default function Subject() {
   const subject = curriculumData[id];
 
   // --- QUIZ ENGINE STATE ---
-  const [quizState, setQuizState] = useState('setup'); // 'setup', 'active', 'results'
+  const [quizState, setQuizState] = useState('setup'); 
   const [settings, setSettings] = useState({ questionCount: 10, timePerQuestion: 60 });
   
   const [activeQuestions, setActiveQuestions] = useState([]);
@@ -16,8 +16,6 @@ export default function Subject() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [score, setScore] = useState(0);
-  
-  // NEW: State to store all user answers for the final review
   const [userAnswers, setUserAnswers] = useState([]); 
 
   // --- TIMER LOGIC ---
@@ -42,8 +40,12 @@ export default function Subject() {
 
   // --- START QUIZ ---
   const startQuiz = () => {
+    // Ensure we have a valid number, clamped to the available questions
+    const requestedCount = settings.questionCount === '' ? 1 : Number(settings.questionCount);
+    const finalCount = Math.min(Math.max(1, requestedCount), subject.quiz.length);
+
     const shuffledQuestions = [...subject.quiz].sort(() => Math.random() - 0.5);
-    const selected = shuffledQuestions.slice(0, settings.questionCount);
+    const selected = shuffledQuestions.slice(0, finalCount);
 
     const preparedQuestions = selected.map(q => {
       const secureOptions = q.options.map((optText, index) => ({
@@ -58,7 +60,7 @@ export default function Subject() {
     setCurrentIndex(0);
     setScore(0);
     setSelectedOptions([]);
-    setUserAnswers([]); // Clear history on new quiz
+    setUserAnswers([]); 
     setTimeLeft(settings.timePerQuestion);
     setQuizState('active');
   };
@@ -74,7 +76,6 @@ export default function Subject() {
   const handleNext = () => {
     const currentQ = activeQuestions[currentIndex];
     
-    // Check correctness
     const correctOptionIndices = currentQ.secureOptions
       .map((opt, idx) => opt.isCorrect ? idx : -1)
       .filter(idx => idx !== -1);
@@ -87,10 +88,8 @@ export default function Subject() {
       setScore(prev => prev + 1);
     }
 
-    // Save the answers for the review screen
     setUserAnswers(prev => [...prev, selectedOptions]);
 
-    // Move to next question or end quiz
     if (currentIndex + 1 < activeQuestions.length) {
       setCurrentIndex(prev => prev + 1);
       setSelectedOptions([]);
@@ -137,7 +136,11 @@ export default function Subject() {
                   <input 
                     type="number" min="1" max={subject.quiz.length} 
                     value={settings.questionCount}
-                    onChange={(e) => setSettings({...settings, questionCount: Number(e.target.value)})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Prevent leading zeros by parsing to int, allow empty string for backspacing
+                      setSettings({...settings, questionCount: val === '' ? '' : parseInt(val, 10)});
+                    }}
                     style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-light)' }}
                   />
                 </div>
@@ -148,7 +151,10 @@ export default function Subject() {
                   <input 
                     type="number" min="10" step="10"
                     value={settings.timePerQuestion}
-                    onChange={(e) => setSettings({...settings, timePerQuestion: Number(e.target.value)})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSettings({...settings, timePerQuestion: val === '' ? '' : parseInt(val, 10)});
+                    }}
                     style={{ width: '100%', padding: '0.75rem', border: '1px solid var(--border-light)' }}
                   />
                 </div>
@@ -181,21 +187,34 @@ export default function Subject() {
                     return (
                       <label 
                         key={i} 
-                        style={{ padding: '1rem', border: `1px solid ${isSelected ? 'var(--border-dark)' : 'var(--border-light)'}`, backgroundColor: isSelected ? '#f3f4f6' : 'transparent', cursor: 'pointer', transition: 'var(--transition)', display: 'flex', alignItems: 'center' }}
+                        style={{ 
+                          padding: '1rem', 
+                          border: `1px solid ${isSelected ? 'var(--border-dark)' : 'var(--border-light)'}`, 
+                          backgroundColor: isSelected ? '#f3f4f6' : 'transparent', 
+                          cursor: 'pointer', 
+                          transition: 'var(--transition)', 
+                          display: 'flex', 
+                          alignItems: 'flex-start' // FIX: Align to top of text
+                        }}
                       >
                         <input 
                           type="checkbox" 
-                          style={{ marginRight: '1rem', width: '1.2rem', height: '1.2rem' }}
+                          style={{ 
+                            marginRight: '1rem', 
+                            width: '1.2rem', 
+                            height: '1.2rem', 
+                            flexShrink: 0, // FIX: Prevent shrinking on mobile
+                            marginTop: '0.1rem' // FIX: Minor optical alignment
+                          }}
                           checked={isSelected}
                           onChange={() => toggleOption(i)}
                         />
-                        <span style={{ lineHeight: '1.4' }}>{opt.text}</span>
+                        <span style={{ lineHeight: '1.4', wordBreak: 'break-word' }}>{opt.text}</span>
                       </label>
                     );
                   })}
                 </div>
                 
-                {/* BUG FIX: Replaced &rarr; with the actual unicode arrow → */}
                 <button 
                   onClick={handleNext}
                   style={{ padding: '1rem 2rem', backgroundColor: 'var(--border-light)', color: 'var(--text-main)', border: '1px solid var(--border-dark)', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', transition: 'var(--transition)' }}
@@ -223,7 +242,6 @@ export default function Subject() {
                   </button>
                 </div>
 
-                {/* --- DETAILED REVIEW SECTION --- */}
                 <div>
                   <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>Performance Review</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
@@ -245,20 +263,18 @@ export default function Subject() {
                               const isSelected = userSelectedIndices.includes(optIndex);
                               const isCorrect = opt.isCorrect;
                               
-                              // Logic to determine highlight colors
                               let bgColor = 'transparent';
                               let borderColor = 'var(--border-light)';
                               let textColor = 'var(--text-main)';
 
                               if (isSelected && isCorrect) {
-                                bgColor = '#dcfce7'; // Light Green
-                                borderColor = '#22c55e'; // Strong Green
+                                bgColor = '#dcfce7'; 
+                                borderColor = '#22c55e'; 
                               } else if (isSelected && !isCorrect) {
-                                bgColor = '#fee2e2'; // Light Red
-                                borderColor = '#ef4444'; // Strong Red
+                                bgColor = '#fee2e2'; 
+                                borderColor = '#ef4444'; 
                               } else if (!isSelected && isCorrect) {
-                                // User missed this correct answer
-                                borderColor = '#22c55e'; // Just a green outline
+                                borderColor = '#22c55e'; 
                                 textColor = '#166534';
                               }
 
@@ -271,16 +287,22 @@ export default function Subject() {
                                     backgroundColor: bgColor,
                                     color: textColor,
                                     display: 'flex',
-                                    alignItems: 'center'
+                                    alignItems: 'flex-start' // FIX: Align to top of text
                                   }}
                                 >
                                   <input 
                                     type="checkbox" 
                                     disabled 
                                     checked={isSelected}
-                                    style={{ marginRight: '1rem', width: '1.2rem', height: '1.2rem' }}
+                                    style={{ 
+                                      marginRight: '1rem', 
+                                      width: '1.2rem', 
+                                      height: '1.2rem',
+                                      flexShrink: 0, // FIX: Prevent shrinking on mobile
+                                      marginTop: '0.1rem' // FIX: Minor optical alignment
+                                    }}
                                   />
-                                  <span style={{ lineHeight: '1.4' }}>{opt.text}</span>
+                                  <span style={{ lineHeight: '1.4', wordBreak: 'break-word' }}>{opt.text}</span>
                                 </div>
                               );
                             })}
