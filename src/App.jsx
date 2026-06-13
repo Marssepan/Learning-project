@@ -4,6 +4,7 @@ import Subject from './Subject';
 
 const subjects = [
   { id: 'elektrotechnika', title: 'Podstawy Elektrotechniki', description: 'Pole elektrostatyczne, prąd stały, prąd przemienny i prawa Kirchhoffa.' },
+  { id: 'elektronika', title: 'Elementy i Układy Elektroniczne', description: 'Półprzewodniki, złącze P-N, diody, tranzystory bipolarne (BJT), polowe (FET) oraz wzmacniacze.' }
 ];
 
 function Home() {
