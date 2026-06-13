@@ -69,7 +69,11 @@ export default function Subject() {
 
       <main className="content-panel">
         {activeTab === 'notes' ? (
-          <div className="notes-content" dangerouslySetInnerHTML={{ __html: subject.notes }} />
+          <div className="notes-content">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {subject.notes}
+          </ReactMarkdown>
+        </div>
         ) : (
           <div>
             {quizState === 'setup' && (
