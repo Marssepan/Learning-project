@@ -31,7 +31,7 @@ export default function Subject() {
   if (!subject) return <div className="container"><h1>Module not found</h1></div>;
 
   const startQuiz = () => {
-    const finalCount = Math.min(Math.max(1, Number(settings.questionCount)), subject.quiz.length);
+    const finalCount = Math.min(Math.max(1, Number(settings.questionCount) || 1), subject.quiz.length);
     const shuffled = [...subject.quiz].sort(() => Math.random() - 0.5);
     setActiveQuestions(shuffled.slice(0, finalCount).map(q => ({
       ...q,
@@ -39,13 +39,19 @@ export default function Subject() {
     })));
     setQuizState('active');
     setCurrentIndex(0);
-    setTimeLeft(settings.timePerQuestion);
+    setScore(0);
+    setUserAnswers([]);
+    setTimeLeft(Number(settings.timePerQuestion) || 60);
+  };
+
+  const toggleOption = (idx) => {
+    setSelectedOptions(prev => prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]);
   };
 
   const handleNext = () => {
     const currentQ = activeQuestions[currentIndex];
-    const isCorrect = currentQ.secureOptions.filter((o, i) => o.isCorrect).every(o => selectedOptions.includes(currentQ.secureOptions.indexOf(o))) && 
-                      currentQ.secureOptions.filter((o, i) => selectedOptions.includes(i)).every(o => o.isCorrect);
+    const correctIndices = currentQ.secureOptions.map((o, i) => o.isCorrect ? i : -1).filter(i => i !== -1);
+    const isCorrect = correctIndices.length === selectedOptions.length && correctIndices.every(i => selectedOptions.includes(i));
     
     if (isCorrect) setScore(s => s + 1);
     setUserAnswers([...userAnswers, selectedOptions]);
@@ -53,7 +59,7 @@ export default function Subject() {
     if (currentIndex + 1 < activeQuestions.length) {
       setCurrentIndex(c => c + 1);
       setSelectedOptions([]);
-      setTimeLeft(settings.timePerQuestion);
+      setTimeLeft(Number(settings.timePerQuestion) || 60);
     } else setQuizState('results');
   };
 
@@ -72,36 +78,37 @@ export default function Subject() {
       <main className="content-panel">
         {activeTab === 'notes' ? (
           <div className="notes-content">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {subject.notes}
-          </ReactMarkdown>
-        </div>
+            {/* Added fallback to prevent blank screen if markdown fails */}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {subject.notes || "Notes are currently unavailable."}
+            </ReactMarkdown>
+          </div>
         ) : (
           <div>
             {quizState === 'setup' && (
               <div className="quiz-setup">
                 <h2>Configure Evaluation</h2>
-                <label>Questions (Max: {subject.quiz.length})</label>
+                <label>Number of Questions (Max: {subject.quiz.length})</label>
                 <input type="number" value={settings.questionCount} onChange={(e) => setSettings({...settings, questionCount: e.target.value})} />
                 <label>Time per Question (s)</label>
                 <input type="number" value={settings.timePerQuestion} onChange={(e) => setSettings({...settings, timePerQuestion: e.target.value})} />
-                <button onClick={startQuiz} className="primary-btn">Start</button>
+                <button onClick={startQuiz} className="primary-btn">Start Evaluation</button>
               </div>
             )}
 
-            {quizState === 'active' && (
+            {quizState === 'active' && activeQuestions.length > 0 && (
               <div>
                 <div className="quiz-meta">
                   <span>Question {currentIndex + 1} / {activeQuestions.length}</span>
                   <span className="timer">{timeLeft}s</span>
                 </div>
                 <h3>{activeQuestions[currentIndex].question}</h3>
-                {activeQuestions[currentIndex].image && <img src={activeQuestions[currentIndex].image} className="quiz-img" />}
+                {activeQuestions[currentIndex].image && <img src={activeQuestions[currentIndex].image} className="quiz-img" alt="Diagram" />}
                 
                 <div className="options-grid">
                   {activeQuestions[currentIndex].secureOptions.map((opt, i) => (
                     <label key={i} className={`option-card ${selectedOptions.includes(i) ? 'selected' : ''}`}>
-                      <input type="checkbox" checked={selectedOptions.includes(i)} onChange={() => setSelectedOptions(selectedOptions.includes(i) ? selectedOptions.filter(x => x !== i) : [...selectedOptions, i])} />
+                      <input type="checkbox" checked={selectedOptions.includes(i)} onChange={() => toggleOption(i)} />
                       {opt.text}
                     </label>
                   ))}
@@ -117,7 +124,7 @@ export default function Subject() {
                   {activeQuestions.map((q, i) => (
                     <div key={i} className="review-card">
                       <h4>{q.question}</h4>
-                      {q.image && <img src={q.image} className="quiz-img" />}
+                      {q.image && <img src={q.image} className="quiz-img" alt="Diagram" />}
                       {q.secureOptions.map((opt, j) => (
                         <div key={j} className={`review-option ${userAnswers[i].includes(j) && opt.isCorrect ? 'correct' : (userAnswers[i].includes(j) && !opt.isCorrect ? 'wrong' : '')}`}>
                           {opt.text}
@@ -126,6 +133,7 @@ export default function Subject() {
                     </div>
                   ))}
                 </div>
+                <button onClick={() => setQuizState('setup')} className="primary-btn">Configure New Quiz</button>
               </div>
             )}
           </div>
