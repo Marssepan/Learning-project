@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import Subject from './Subject';
 
 const subjects = [
@@ -27,10 +27,23 @@ function Home() {
   );
 }
 
+// This helper component handles the redirect from our 404.html page
+function Redirector() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const path = params.get('p');
+    if (path) {
+      navigate(path, { replace: true });
+    }
+  }, [navigate]);
+  return null;
+}
+
 export default function App() {
   return (
-    // Add the basename property right here:
     <Router basename="/Learning-project">
+      <Redirector />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/subject/:id" element={<Subject />} />
