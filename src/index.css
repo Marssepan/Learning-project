@@ -25,9 +25,28 @@ h1, h2, h3, .serif-text {
 }
 
 .container {
-  max-width: 900px;
+  /* Use a percentage for side padding on mobile, switch to auto on desktop */
+  padding: 0 5%; 
   margin: 0 auto;
-  padding: 4rem 2rem;
+  
+  /* Start narrow on phones, expand to a comfortable reading width on desktop */
+  width: 100%;
+  max-width: 800px; 
+  
+  /* Ensure it doesn't break on very small screens */
+  box-sizing: border-box;
+}
+
+/* Optional: Make the text bigger and more readable for mobile users */
+body {
+  font-size: 16px; /* Base size */
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 20px; /* Switch to fixed padding on larger screens */
+  }
 }
 
 /* Header Styles */
