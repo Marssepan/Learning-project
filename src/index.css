@@ -10,155 +10,79 @@
   --transition: all 0.3s ease;
 }
 
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
   background-color: var(--bg-main);
   color: var(--text-main);
   font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  word-wrap: break-word; /* Prevents long formulas from breaking the layout */
-  overflow-x: hidden;    /* Prevents the page from being scrollable horizontally */
-}
-
-h1, h2, h3, .serif-text {
-  font-family: 'Playfair Display', serif;
-  font-weight: 500;
-  margin: 0;
-}
-
-.container {
-  /* Use a percentage for side padding on mobile, switch to auto on desktop */
-  padding: 0 5%; 
-  margin: 0 auto;
-  
-  /* Start narrow on phones, expand to a comfortable reading width on desktop */
-  width: 100%;
-  max-width: 800px; 
-  
-  /* Ensure it doesn't break on very small screens */
-  box-sizing: border-box;
-}
-
-/* Optional: Make the text bigger and more readable for mobile users */
-body {
-  font-size: 16px; /* Base size */
+  font-size: 16px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-@media (min-width: 768px) {
-  .container {
-    padding: 0 20px; /* Switch to fixed padding on larger screens */
-  }
-}
+h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 500; margin: 0; }
 
-/* Header Styles */
-.page-header {
-  margin-bottom: 4rem;
-}
-
-.page-header h1 {
-  font-size: 3rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-}
-
-.divider {
-  height: 1px;
+/* The Responsive Container */
+.container {
   width: 100%;
-  background-color: var(--border-light);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem; /* Comfortable padding for phones */
 }
 
-/* Grid & Cards */
+/* Header */
+.page-header { margin: 2rem 0; }
+.page-header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+
+/* Content Panel (The Blog Feel) */
+.content-panel {
+  background: var(--surface);
+  padding: 1.5rem; /* Reduced for mobile */
+  border: 1px solid var(--border-light);
+  margin-bottom: 3rem;
+}
+
+/* Markdown Formatting */
+.notes-content { line-height: 1.7; }
+.notes-content img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
+.notes-content table { 
+  display: block; 
+  width: 100%; 
+  overflow-x: auto; 
+  border-collapse: collapse; 
+  margin: 1.5rem 0; 
+}
+.notes-content th, .notes-content td { padding: 0.75rem; border: 1px solid var(--border-light); }
+
+/* Quiz & Grid */
 .subject-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: 1fr; /* Stack cards on mobile */
+  gap: 1rem;
 }
 
 .subject-card {
-  display: block;
   background: var(--surface);
-  padding: 2rem;
+  padding: 1.5rem;
   border: 1px solid var(--border-light);
   text-decoration: none;
   color: inherit;
-  transition: var(--transition);
-  cursor: pointer;
-}
-
-.subject-card:hover {
-  border-color: var(--border-dark);
-  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
-  transform: translateY(-2px);
-}
-
-.subject-card h2 {
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-}
-
-.subject-card p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  font-weight: 300;
-  line-height: 1.6;
-}
-
-/* Subject View Specifics */
-.back-link {
-  display: inline-block;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 2rem;
-  transition: var(--transition);
-}
-
-.back-link:hover {
-  color: var(--text-main);
 }
 
 .tabs {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
   border-bottom: 1px solid var(--border-light);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-.tab-btn {
-  background: none;
-  border: none;
-  padding: 0 0 1rem 0;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: var(--transition);
-  border-bottom: 2px solid transparent;
-}
-
-.tab-btn.active {
-  color: var(--text-main);
-  border-bottom-color: var(--border-dark);
-  font-weight: 500;
-}
-
-.content-panel {
-  background: var(--surface);
-  padding: 3rem; /* Desktop padding */
-  border: 1px solid var(--border-light);
-}
-
-/* Add this media query at the bottom of your index.css */
-@media (max-width: 600px) {
-  .content-panel {
-    padding: 1.5rem 1rem; /* Much smaller padding on phones */
-  }
-
-  .page-header h1 {
-    font-size: 2rem; /* Shrink title so it doesn't wrap awkwardly */
-  }
+/* Responsive Overrides for Desktop */
+@media (min-width: 768px) {
+  .container { padding: 0 20px; }
+  .content-panel { padding: 3rem; }
+  .subject-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .page-header h1 { font-size: 3.5rem; }
 }
