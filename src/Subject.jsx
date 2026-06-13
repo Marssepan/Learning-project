@@ -7,7 +7,6 @@ export default function Subject() {
   const [activeTab, setActiveTab] = useState('notes');
   const subject = curriculumData[id];
 
-  // --- QUIZ ENGINE STATE ---
   const [quizState, setQuizState] = useState('setup'); 
   const [settings, setSettings] = useState({ questionCount: 10, timePerQuestion: 60 });
   
@@ -18,7 +17,6 @@ export default function Subject() {
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]); 
 
-  // --- TIMER LOGIC ---
   useEffect(() => {
     let timer;
     if (quizState === 'active' && timeLeft > 0) {
@@ -38,7 +36,6 @@ export default function Subject() {
     );
   }
 
-  // --- START QUIZ ---
   const startQuiz = () => {
     const requestedCount = settings.questionCount === '' ? 1 : Number(settings.questionCount);
     const finalCount = Math.min(Math.max(1, requestedCount), subject.quiz.length);
@@ -64,14 +61,12 @@ export default function Subject() {
     setQuizState('active');
   };
 
-  // --- HANDLE SELECTIONS ---
   const toggleOption = (index) => {
     setSelectedOptions(prev => 
       prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
     );
   };
 
-  // --- GRADING & ADVANCING ---
   const handleNext = () => {
     const currentQ = activeQuestions[currentIndex];
     
@@ -122,9 +117,7 @@ export default function Subject() {
             <div className="notes-content" style={{ lineHeight: '1.8' }} dangerouslySetInnerHTML={{ __html: subject.notes }} />
           </div>
         ) : (
-          
           <div>
-            {/* STATE 1: SETUP */}
             {quizState === 'setup' && (
               <div style={{ maxWidth: '400px' }}>
                 <h2 style={{ marginBottom: '2rem' }}>Configure Evaluation</h2>
@@ -165,7 +158,6 @@ export default function Subject() {
               </div>
             )}
 
-            {/* STATE 2: ACTIVE QUIZ */}
             {quizState === 'active' && activeQuestions.length > 0 && (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid var(--border-light)' }}>
@@ -176,37 +168,22 @@ export default function Subject() {
                     {timeLeft}s
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '2rem', lineHeight: '1.6' }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
                   {activeQuestions[currentIndex].question}
                 </h3>
+
+                {activeQuestions[currentIndex].image && (
+                  <div style={{ marginBottom: '2rem' }}>
+                    <img src={activeQuestions[currentIndex].image} alt="Question diagram" style={{ maxWidth: '100%', height: 'auto', border: '1px solid var(--border-light)' }} />
+                  </div>
+                )}
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '3rem' }}>
                   {activeQuestions[currentIndex].secureOptions.map((opt, i) => {
                     const isSelected = selectedOptions.includes(i);
                     return (
-                      <label 
-                        key={i} 
-                        style={{ 
-                          padding: '0.75rem 1rem', // FIX: Reduced padding for more horizontal space
-                          border: `1px solid ${isSelected ? 'var(--border-dark)' : 'var(--border-light)'}`, 
-                          backgroundColor: isSelected ? '#f3f4f6' : 'transparent', 
-                          cursor: 'pointer', 
-                          transition: 'var(--transition)', 
-                          display: 'flex', 
-                          alignItems: 'flex-start'
-                        }}
-                      >
-                        <input 
-                          type="checkbox" 
-                          style={{ 
-                            marginRight: '1rem', 
-                            width: '1.2rem', 
-                            height: '1.2rem', 
-                            flexShrink: 0, 
-                            marginTop: '0.1rem' 
-                          }}
-                          checked={isSelected}
-                          onChange={() => toggleOption(i)}
-                        />
+                      <label key={i} style={{ padding: '0.75rem 1rem', border: `1px solid ${isSelected ? 'var(--border-dark)' : 'var(--border-light)'}`, backgroundColor: isSelected ? '#f3f4f6' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'flex-start' }}>
+                        <input type="checkbox" style={{ marginRight: '1rem', width: '1.2rem', height: '1.2rem', flexShrink: 0, marginTop: '0.1rem' }} checked={isSelected} onChange={() => toggleOption(i)} />
                         <span style={{ lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'normal' }}>{opt.text}</span>
                       </label>
                     );
@@ -215,16 +192,13 @@ export default function Subject() {
                 
                 <button 
                   onClick={handleNext}
-                  style={{ padding: '1rem 2rem', backgroundColor: 'var(--border-light)', color: 'var(--text-main)', border: '1px solid var(--border-dark)', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', transition: 'var(--transition)' }}
-                  onMouseOver={(e) => { e.target.style.backgroundColor = 'var(--text-main)'; e.target.style.color = 'white'; }}
-                  onMouseOut={(e) => { e.target.style.backgroundColor = 'var(--border-light)'; e.target.style.color = 'var(--text-main)'; }}
+                  style={{ padding: '1rem 2rem', backgroundColor: 'var(--border-light)', color: 'var(--text-main)', border: '1px solid var(--border-dark)', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}
                 >
                   {currentIndex + 1 === activeQuestions.length ? 'Submit Final Answer' : 'Next Question →'}
                 </button>
               </div>
             )}
 
-            {/* STATE 3: RESULTS & REVIEW */}
             {quizState === 'results' && (
               <div>
                 <div style={{ textAlign: 'center', padding: '3rem 0', borderBottom: '1px solid var(--border-light)', marginBottom: '3rem' }}>
@@ -232,10 +206,7 @@ export default function Subject() {
                   <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
                     You scored <strong style={{ color: 'var(--text-main)', fontSize: '1.5rem' }}>{score}</strong> out of {activeQuestions.length}.
                   </p>
-                  <button 
-                    onClick={() => setQuizState('setup')}
-                    style={{ padding: '1rem 3rem', backgroundColor: 'var(--text-main)', color: 'white', border: 'none', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}
-                  >
+                  <button onClick={() => setQuizState('setup')} style={{ padding: '1rem 3rem', backgroundColor: 'var(--text-main)', color: 'white', border: 'none', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem' }}>
                     Configure New Quiz
                   </button>
                 </div>
@@ -243,63 +214,28 @@ export default function Subject() {
                 <div>
                   <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem', fontFamily: 'var(--font-serif)' }}>Performance Review</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    
                     {activeQuestions.map((q, qIndex) => {
                       const userSelectedIndices = userAnswers[qIndex] || [];
-                      
                       return (
-                        <div key={qIndex} style={{ padding: '1rem', backgroundColor: '#fff', border: '1px solid var(--border-light)' }}> {/* FIX: Reduced parent container padding */}
-                          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Question {qIndex + 1}
-                          </p>
-                          <h4 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', lineHeight: '1.6', fontWeight: '500' }}>
-                            {q.question}
-                          </h4>
+                        <div key={qIndex} style={{ padding: '1rem', backgroundColor: '#fff', border: '1px solid var(--border-light)' }}>
+                          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Question {qIndex + 1}</p>
+                          <h4 style={{ fontSize: '1.125rem', marginBottom: '1.5rem', lineHeight: '1.6', fontWeight: '500' }}>{q.question}</h4>
+                          
+                          {q.image && (
+                            <div style={{ marginBottom: '1.5rem' }}>
+                              <img src={q.image} alt="Question diagram" style={{ maxWidth: '100%', height: 'auto', border: '1px solid var(--border-light)' }} />
+                            </div>
+                          )}
                           
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {q.secureOptions.map((opt, optIndex) => {
                               const isSelected = userSelectedIndices.includes(optIndex);
                               const isCorrect = opt.isCorrect;
-                              
-                              let bgColor = 'transparent';
-                              let borderColor = 'var(--border-light)';
-                              let textColor = 'var(--text-main)';
-
-                              if (isSelected && isCorrect) {
-                                bgColor = '#dcfce7'; 
-                                borderColor = '#22c55e'; 
-                              } else if (isSelected && !isCorrect) {
-                                bgColor = '#fee2e2'; 
-                                borderColor = '#ef4444'; 
-                              } else if (!isSelected && isCorrect) {
-                                borderColor = '#22c55e'; 
-                                textColor = '#166534';
-                              }
-
+                              let bgColor = isSelected && isCorrect ? '#dcfce7' : (isSelected && !isCorrect ? '#fee2e2' : 'transparent');
+                              let borderColor = isSelected && isCorrect ? '#22c55e' : (isSelected && !isCorrect ? '#ef4444' : 'var(--border-light)');
                               return (
-                                <div 
-                                  key={optIndex} 
-                                  style={{ 
-                                    padding: '0.75rem 1rem', // FIX: Reduced padding inside the options
-                                    border: `1px solid ${borderColor}`, 
-                                    backgroundColor: bgColor,
-                                    color: textColor,
-                                    display: 'flex',
-                                    alignItems: 'flex-start'
-                                  }}
-                                >
-                                  <input 
-                                    type="checkbox" 
-                                    disabled 
-                                    checked={isSelected}
-                                    style={{ 
-                                      marginRight: '1rem', 
-                                      width: '1.2rem', 
-                                      height: '1.2rem',
-                                      flexShrink: 0, 
-                                      marginTop: '0.1rem' 
-                                    }}
-                                  />
+                                <div key={optIndex} style={{ padding: '0.75rem 1rem', border: `1px solid ${borderColor}`, backgroundColor: bgColor, display: 'flex', alignItems: 'flex-start' }}>
+                                  <input type="checkbox" disabled checked={isSelected} style={{ marginRight: '1rem', width: '1.2rem', height: '1.2rem', flexShrink: 0, marginTop: '0.1rem' }} />
                                   <span style={{ lineHeight: '1.4', overflowWrap: 'break-word', wordBreak: 'normal' }}>{opt.text}</span>
                                 </div>
                               );
@@ -308,7 +244,6 @@ export default function Subject() {
                         </div>
                       );
                     })}
-                    
                   </div>
                 </div>
               </div>
